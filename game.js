@@ -14,17 +14,14 @@ class Game2048 {
     }
 
     initDOM() {
-        // Grid cells
         this.gridContainer = document.getElementById('grid-container');
         this.tilesContainer = document.getElementById('tiles-container');
         this.scoreElement = document.getElementById('score');
         
-        // Buttons
         this.newGameBtn = document.getElementById('new-game-btn');
         this.undoBtn = document.getElementById('undo-btn');
         this.leaderboardBtn = document.getElementById('leaderboard-btn');
         
-        // Modals
         this.gameOverModal = document.getElementById('game-over-modal');
         this.gameOverTitle = document.getElementById('game-over-title');
         this.leaderboardModal = document.getElementById('leaderboard-modal');
@@ -36,7 +33,6 @@ class Game2048 {
         this.restartBtn = document.getElementById('restart-btn');
         this.closeLeaderboardBtn = document.getElementById('close-leaderboard');
         
-        // Mobile controls
         this.mobileControls = document.getElementById('mobile-controls');
         
         this.createGridCells();
@@ -52,7 +48,6 @@ class Game2048 {
     }
 
     initEventListeners() {
-        // Keyboard controls
         document.addEventListener('keydown', (e) => {
             if (this.gameOver) return;
             
@@ -69,7 +64,6 @@ class Game2048 {
             }
         });
 
-        // Mobile controls
         const controlButtons = document.querySelectorAll('.control-btn');
         controlButtons.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -79,10 +73,8 @@ class Game2048 {
             });
         });
 
-        // Touch/swipe controls
         this.initTouchControls();
 
-        // Button clicks
         this.newGameBtn.addEventListener('click', () => this.newGame());
         this.undoBtn.addEventListener('click', () => this.undo());
         this.leaderboardBtn.addEventListener('click', () => this.showLeaderboard());
@@ -90,14 +82,12 @@ class Game2048 {
         this.saveScoreBtn.addEventListener('click', () => this.saveScore());
         this.closeLeaderboardBtn.addEventListener('click', () => this.hideLeaderboard());
         
-        // Close modals on outside click
         this.leaderboardModal.addEventListener('click', (e) => {
             if (e.target === this.leaderboardModal) {
                 this.hideLeaderboard();
             }
         });
         
-        // Enter key on name input
         this.playerNameInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.saveScore();
@@ -113,8 +103,7 @@ class Game2048 {
         this.won = false;
         this.tileIdCounter = 0;
         
-        // Add initial tiles (1-3 random tiles)
-        const initialTiles = 1 + Math.floor(Math.random() * 3); // 1, 2, or 3 tiles
+        const initialTiles = 1 + Math.floor(Math.random() * 3);
         for (let i = 0; i < initialTiles; i++) {
             this.addRandomTile();
         }
@@ -188,7 +177,7 @@ class Game2048 {
         
         if (emptyCells.length > 0) {
             const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-            const value = Math.random() < 0.9 ? 2 : 4; // 90% chance of 2, 10% chance of 4
+            const value = Math.random() < 0.9 ? 2 : 4;
             
             this.grid[randomCell.row][randomCell.col] = {
                 value: value,
@@ -202,17 +191,14 @@ class Game2048 {
     move(direction) {
         if (this.gameOver) return;
         
-        // Save state for undo
         this.saveStateToHistory();
         
         const previousGrid = JSON.stringify(this.grid);
         let moved = false;
         let scoreGained = 0;
         
-        // Reset merge flags
         this.resetMergeFlags();
         
-        // Perform the move based on direction
         if (direction === 'left') {
             for (let i = 0; i < this.gridSize; i++) {
                 const result = this.moveRow(this.grid[i]);
@@ -246,17 +232,14 @@ class Game2048 {
             }
         }
         
-        // If the grid changed, add a new tile
         if (moved) {
             this.score += scoreGained;
             
-            // Check for win condition (2048 tile reached)
             if (!this.won && this.hasWon()) {
                 this.won = true;
                 setTimeout(() => this.showWinMessage(), 300);
             }
             
-            // Add 1-2 new tiles
             const newTilesCount = Math.random() < 0.9 ? 1 : 2;
             for (let i = 0; i < newTilesCount; i++) {
                 this.addRandomTile();
@@ -266,14 +249,12 @@ class Game2048 {
             this.saveGame();
             this.updateUndoButton();
             
-            // Check for game over
             if (!this.canMove()) {
                 this.gameOver = true;
                 this.saveGame();
                 setTimeout(() => this.showGameOver(), 300);
             }
         } else {
-            // No move happened, remove the saved state from history
             this.history.pop();
         }
     }
@@ -290,8 +271,6 @@ class Game2048 {
     }
 
     showWinMessage() {
-        // You can add a temporary win message or animation here
-        // For now, we'll just show a subtle notification
         const winNotification = document.createElement('div');
         winNotification.textContent = '🎉 Поздравляем! Вы достигли 2048! 🎉';
         winNotification.style.cssText = `
@@ -326,7 +305,6 @@ class Game2048 {
         let score = 0;
         const originalLength = newRow.length;
         
-        // Merge adjacent tiles with the same value
         for (let i = 0; i < newRow.length - 1; i++) {
             if (newRow[i] && newRow[i + 1] && newRow[i].value === newRow[i + 1].value && !newRow[i].merged && !newRow[i + 1].merged) {
                 newRow[i] = {
@@ -341,17 +319,14 @@ class Game2048 {
             }
         }
         
-        // Fill with nulls
         while (newRow.length < this.gridSize) {
             newRow.push(null);
         }
         
-        // Check if anything moved
         if (!moved && originalLength !== row.filter(cell => cell !== null).length) {
             moved = true;
         }
         
-        // Check if positions changed
         for (let i = 0; i < this.gridSize; i++) {
             if ((row[i] === null) !== (newRow[i] === null)) {
                 moved = true;
@@ -392,7 +367,6 @@ class Game2048 {
     }
 
     canMove() {
-        // Check for empty cells
         for (let i = 0; i < this.gridSize; i++) {
             for (let j = 0; j < this.gridSize; j++) {
                 if (this.grid[i][j] === null) {
@@ -401,12 +375,10 @@ class Game2048 {
             }
         }
         
-        // Check for possible merges
         for (let i = 0; i < this.gridSize; i++) {
             for (let j = 0; j < this.gridSize; j++) {
                 const current = this.grid[i][j];
                 
-                // Check right
                 if (j < this.gridSize - 1) {
                     const right = this.grid[i][j + 1];
                     if (right && current.value === right.value) {
@@ -414,7 +386,6 @@ class Game2048 {
                     }
                 }
                 
-                // Check down
                 if (i < this.gridSize - 1) {
                     const down = this.grid[i + 1][j];
                     if (down && current.value === down.value) {
@@ -434,7 +405,6 @@ class Game2048 {
         };
         this.history.push(state);
         
-        // Limit history to last 10 moves to save memory
         if (this.history.length > 10) {
             this.history.shift();
         }
@@ -459,10 +429,8 @@ class Game2048 {
     }
 
     updateDisplay() {
-        // Update score
         this.scoreElement.textContent = this.score;
         
-        // Update tiles
         this.renderTiles();
     }
 
@@ -491,7 +459,6 @@ class Game2048 {
                     
                     tileElement.textContent = tile.value;
                     
-                    // Position the tile
                     const left = gap + j * (cellSize + gap);
                     const top = gap + i * (cellSize + gap);
                     
@@ -545,7 +512,6 @@ class Game2048 {
         leaderboard.push(entry);
         leaderboard.sort((a, b) => b.score - a.score);
         
-        // Keep only top 10
         const top10 = leaderboard.slice(0, 10);
         
         localStorage.setItem('game2048Leaderboard', JSON.stringify(top10));
@@ -650,21 +616,17 @@ class Game2048 {
         const absDiffX = Math.abs(diffX);
         const absDiffY = Math.abs(diffY);
         
-        // Check if swipe distance is sufficient
         if (Math.max(absDiffX, absDiffY) < minDistance) {
             return;
         }
         
-        // Determine direction based on the larger difference
         if (absDiffX > absDiffY) {
-            // Horizontal swipe
             if (diffX > 0) {
                 this.move('right');
             } else {
                 this.move('left');
             }
         } else {
-            // Vertical swipe
             if (diffY > 0) {
                 this.move('down');
             } else {
@@ -674,15 +636,12 @@ class Game2048 {
     }
 }
 
-// Initialize game when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     const game = new Game2048();
     
-    // Handle window resize for tile positioning
     window.addEventListener('resize', () => {
         game.renderTiles();
         
-        // Show/hide mobile controls based on screen size
         if (window.innerWidth <= 768 && !game.gameOver) {
             game.showMobileControls();
         } else if (window.innerWidth > 768) {
