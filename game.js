@@ -5,6 +5,7 @@ class Game2048 {
         this.gridSize = 4;
         this.history = [];
         this.gameOver = false;
+        this.won = false;
         this.tileIdCounter = 0;
         
         this.initDOM();
@@ -25,6 +26,7 @@ class Game2048 {
         
         // Modals
         this.gameOverModal = document.getElementById('game-over-modal');
+        this.gameOverTitle = document.getElementById('game-over-title');
         this.leaderboardModal = document.getElementById('leaderboard-modal');
         this.finalScoreElement = document.getElementById('final-score');
         this.saveScoreForm = document.getElementById('save-score-form');
@@ -108,6 +110,7 @@ class Game2048 {
         this.score = 0;
         this.history = [];
         this.gameOver = false;
+        this.won = false;
         this.tileIdCounter = 0;
         
         // Add initial tiles (1-3 random tiles)
@@ -131,6 +134,7 @@ class Game2048 {
                 this.score = state.score;
                 this.history = state.history || [];
                 this.gameOver = state.gameOver || false;
+                this.won = state.won || false;
                 this.tileIdCounter = state.tileIdCounter || 0;
                 
                 this.updateDisplay();
@@ -154,6 +158,7 @@ class Game2048 {
             score: this.score,
             history: this.history,
             gameOver: this.gameOver,
+            won: this.won,
             tileIdCounter: this.tileIdCounter
         };
         localStorage.setItem('game2048State', JSON.stringify(state));
@@ -245,6 +250,12 @@ class Game2048 {
         if (moved) {
             this.score += scoreGained;
             
+            // Check for win condition (2048 tile reached)
+            if (!this.won && this.hasWon()) {
+                this.won = true;
+                setTimeout(() => this.showWinMessage(), 300);
+            }
+            
             // Add 1-2 new tiles
             const newTilesCount = Math.random() < 0.9 ? 1 : 2;
             for (let i = 0; i < newTilesCount; i++) {
@@ -265,6 +276,48 @@ class Game2048 {
             // No move happened, remove the saved state from history
             this.history.pop();
         }
+    }
+
+    hasWon() {
+        for (let i = 0; i < this.gridSize; i++) {
+            for (let j = 0; j < this.gridSize; j++) {
+                if (this.grid[i][j] && this.grid[i][j].value >= 2048) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    showWinMessage() {
+        // You can add a temporary win message or animation here
+        // For now, we'll just show a subtle notification
+        const winNotification = document.createElement('div');
+        winNotification.textContent = '🎉 Поздравляем! Вы достигли 2048! 🎉';
+        winNotification.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(237, 194, 46, 0.95);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            z-index: 999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s ease-in;
+        `;
+        
+        document.body.appendChild(winNotification);
+        
+        setTimeout(() => {
+            winNotification.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => {
+                document.body.removeChild(winNotification);
+            }, 300);
+        }, 2000);
     }
 
     moveRow(row) {
@@ -455,6 +508,7 @@ class Game2048 {
 
     showGameOver() {
         this.finalScoreElement.textContent = this.score;
+        this.gameOverTitle.textContent = 'Игра окончена!';
         this.saveScoreForm.classList.remove('hidden');
         this.scoreSavedMessage.classList.add('hidden');
         this.playerNameInput.value = '';

@@ -12,6 +12,25 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
 .container {
@@ -186,19 +205,20 @@ h1 {
     }
 }
 
-/* Tile colors */
-.tile-2 { background: #eee4da; color: #776e65; }
-.tile-4 { background: #ede0c8; color: #776e65; }
-.tile-8 { background: #f2b179; color: #f9f6f2; }
-.tile-16 { background: #f59563; color: #f9f6f2; }
-.tile-32 { background: #f67c5f; color: #f9f6f2; }
-.tile-64 { background: #f65e3b; color: #f9f6f2; }
-.tile-128 { background: #edcf72; color: #f9f6f2; font-size: 1.8em; }
-.tile-256 { background: #edcc61; color: #f9f6f2; font-size: 1.8em; }
-.tile-512 { background: #edc850; color: #f9f6f2; font-size: 1.8em; }
-.tile-1024 { background: #edc53f; color: #f9f6f2; font-size: 1.5em; }
-.tile-2048 { background: #edc22e; color: #f9f6f2; font-size: 1.5em; }
-.tile-4096 { background: #3c3a32; color: #f9f6f2; font-size: 1.5em; }
+/* Tile colors with shadow for depth */
+.tile-2 { background: #eee4da; color: #776e65; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.tile-4 { background: #ede0c8; color: #776e65; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.tile-8 { background: #f2b179; color: #f9f6f2; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+.tile-16 { background: #f59563; color: #f9f6f2; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+.tile-32 { background: #f67c5f; color: #f9f6f2; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+.tile-64 { background: #f65e3b; color: #f9f6f2; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+.tile-128 { background: #edcf72; color: #f9f6f2; font-size: 1.8em; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+.tile-256 { background: #edcc61; color: #f9f6f2; font-size: 1.8em; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
+.tile-512 { background: #edc850; color: #f9f6f2; font-size: 1.8em; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
+.tile-1024 { background: #edc53f; color: #f9f6f2; font-size: 1.5em; box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
+.tile-2048 { background: #edc22e; color: #f9f6f2; font-size: 1.5em; box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
+.tile-4096 { background: #3c3a32; color: #f9f6f2; font-size: 1.5em; box-shadow: 0 3px 8px rgba(0,0,0,0.35); }
+.tile-8192 { background: #ff6b6b; color: #f9f6f2; font-size: 1.2em; box-shadow: 0 3px 8px rgba(0,0,0,0.4); }
 
 /* Mobile controls */
 .mobile-controls {
@@ -355,6 +375,39 @@ h1 {
     color: #fff;
     padding: 40px;
     font-size: 1.2em;
+}
+
+/* Scrollbar styling */
+.leaderboard-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.leaderboard-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.leaderboard-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.leaderboard-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Accessibility improvements */
+.btn:focus,
+.control-btn:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
+}
+
+/* Better disabled state */
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(50%);
 }
 
 /* Responsive design */
