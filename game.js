@@ -77,6 +77,9 @@ class Game2048 {
             });
         });
 
+        // Touch/swipe controls
+        this.initTouchControls();
+
         // Button clicks
         this.newGameBtn.addEventListener('click', () => this.newGame());
         this.undoBtn.addEventListener('click', () => this.undo());
@@ -562,6 +565,58 @@ class Game2048 {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    initTouchControls() {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        
+        const gameContainer = document.getElementById('game-container');
+        const minSwipeDistance = 30;
+        
+        gameContainer.addEventListener('touchstart', (e) => {
+            if (this.gameOver) return;
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+        
+        gameContainer.addEventListener('touchend', (e) => {
+            if (this.gameOver) return;
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            this.handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY, minSwipeDistance);
+        }, { passive: true });
+    }
+
+    handleSwipe(startX, startY, endX, endY, minDistance) {
+        const diffX = endX - startX;
+        const diffY = endY - startY;
+        const absDiffX = Math.abs(diffX);
+        const absDiffY = Math.abs(diffY);
+        
+        // Check if swipe distance is sufficient
+        if (Math.max(absDiffX, absDiffY) < minDistance) {
+            return;
+        }
+        
+        // Determine direction based on the larger difference
+        if (absDiffX > absDiffY) {
+            // Horizontal swipe
+            if (diffX > 0) {
+                this.move('right');
+            } else {
+                this.move('left');
+            }
+        } else {
+            // Vertical swipe
+            if (diffY > 0) {
+                this.move('down');
+            } else {
+                this.move('up');
+            }
+        }
     }
 }
 
