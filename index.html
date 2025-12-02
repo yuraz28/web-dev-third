@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Играйте в 2048 - увлекательную головоломку, где нужно объединять плитки для достижения 2048!">
+    <meta name="theme-color" content="#667eea">
+    <title>2048 Game</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🔢%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>2048</h1>
+            <div class="header-controls">
+                <div class="score-container">
+                    <div class="score-label">Очки</div>
+                    <div id="score" class="score-value">0</div>
+                </div>
+                <button id="new-game-btn" class="btn btn-new-game" title="Начать заново">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                        <path d="M21 3v5h-5"/>
+                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                        <path d="M3 21v-5h5"/>
+                    </svg>
+                </button>
+                <button id="undo-btn" class="btn btn-undo" title="Отменить ход">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 7v6h6"/>
+                        <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+                    </svg>
+                </button>
+                <button id="leaderboard-btn" class="btn btn-leaderboard">Лидеры</button>
+            </div>
+        </header>
+
+        <div id="game-container" class="game-container">
+            <div id="grid-container" class="grid-container"></div>
+            <div id="tiles-container" class="tiles-container"></div>
+        </div>
+
+        <!-- Mobile controls -->
+        <div id="mobile-controls" class="mobile-controls">
+            <div class="controls-row">
+                <button class="control-btn" data-direction="up">↑</button>
+            </div>
+            <div class="controls-row">
+                <button class="control-btn" data-direction="left">←</button>
+                <button class="control-btn" data-direction="down">↓</button>
+                <button class="control-btn" data-direction="right">→</button>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="game-over-modal" class="modal">
+            <div class="modal-content">
+                <h2 id="game-over-title">Игра окончена!</h2>
+                <p class="final-score">Ваш счет: <span id="final-score">0</span></p>
+                <div id="save-score-form" class="save-score-form">
+                    <input type="text" id="player-name" placeholder="Введите ваше имя" maxlength="20">
+                    <button id="save-score-btn" class="btn btn-primary">Сохранить результат</button>
+                </div>
+                <div id="score-saved-message" class="score-saved-message hidden">
+                    <p>Ваш рекорд сохранен!</p>
+                </div>
+                <div id="name-error-message" class="error-message hidden">
+                    <p>Пожалуйста, введите ваше имя</p>
+                </div>
+                <button id="restart-btn" class="btn btn-new-game">Начать заново</button>
+            </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div id="error-modal" class="modal">
+            <div class="modal-content">
+                <button class="close-btn" id="close-error">&times;</button>
+                <h2>Ошибка</h2>
+                <p id="error-message-text"></p>
+                <button id="error-ok-btn" class="btn btn-primary">OK</button>
+            </div>
+        </div>
+
+        <!-- Win Notification -->
+        <div id="win-notification" class="win-notification hidden">
+            <p>🎉 Поздравляем! Вы достигли 2048! 🎉</p>
+        </div>
+
+        <!-- Leaderboard Modal -->
+        <div id="leaderboard-modal" class="modal">
+            <div class="modal-content">
+                <button class="close-btn" id="close-leaderboard">&times;</button>
+                <h2>Таблица лидеров</h2>
+                <div class="leaderboard-container">
+                    <table id="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Имя</th>
+                                <th>Очки</th>
+                                <th>Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <!-- Leaderboard entries will be inserted here -->
+                        </tbody>
+                    </table>
+                    <div id="empty-leaderboard" class="empty-leaderboard hidden">
+                        <p>Таблица лидеров пуста. Сыграйте первую игру!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
+
