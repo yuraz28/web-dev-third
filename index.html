@@ -6,6 +6,7 @@
     <meta name="description" content="Играйте в 2048 - увлекательную головоломку, где нужно объединять плитки для достижения 2048!">
     <meta name="theme-color" content="#667eea">
     <title>2048 Game</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🔢%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -64,8 +65,26 @@
                 <div id="score-saved-message" class="score-saved-message hidden">
                     <p>Ваш рекорд сохранен!</p>
                 </div>
+                <div id="name-error-message" class="error-message hidden">
+                    <p>Пожалуйста, введите ваше имя</p>
+                </div>
                 <button id="restart-btn" class="btn btn-new-game">Начать заново</button>
             </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div id="error-modal" class="modal">
+            <div class="modal-content">
+                <button class="close-btn" id="close-error">&times;</button>
+                <h2>Ошибка</h2>
+                <p id="error-message-text"></p>
+                <button id="error-ok-btn" class="btn btn-primary">OK</button>
+            </div>
+        </div>
+
+        <!-- Win Notification -->
+        <div id="win-notification" class="win-notification hidden">
+            <p>🎉 Поздравляем! Вы достигли 2048! 🎉</p>
         </div>
 
         <!-- Leaderboard Modal -->

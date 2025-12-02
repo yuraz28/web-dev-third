@@ -28,10 +28,16 @@ class Game2048 {
         this.finalScoreElement = document.getElementById('final-score');
         this.saveScoreForm = document.getElementById('save-score-form');
         this.scoreSavedMessage = document.getElementById('score-saved-message');
+        this.nameErrorMessage = document.getElementById('name-error-message');
         this.playerNameInput = document.getElementById('player-name');
         this.saveScoreBtn = document.getElementById('save-score-btn');
         this.restartBtn = document.getElementById('restart-btn');
         this.closeLeaderboardBtn = document.getElementById('close-leaderboard');
+        this.errorModal = document.getElementById('error-modal');
+        this.errorMessageText = document.getElementById('error-message-text');
+        this.errorOkBtn = document.getElementById('error-ok-btn');
+        this.closeErrorBtn = document.getElementById('close-error');
+        this.winNotification = document.getElementById('win-notification');
         
         this.mobileControls = document.getElementById('mobile-controls');
         
@@ -39,7 +45,9 @@ class Game2048 {
     }
 
     createGridCells() {
-        this.gridContainer.innerHTML = '';
+        while (this.gridContainer.firstChild) {
+            this.gridContainer.removeChild(this.gridContainer.firstChild);
+        }
         for (let i = 0; i < this.gridSize * this.gridSize; i++) {
             const cell = document.createElement('div');
             cell.className = 'grid-cell';
@@ -81,10 +89,18 @@ class Game2048 {
         this.restartBtn.addEventListener('click', () => this.restartFromGameOver());
         this.saveScoreBtn.addEventListener('click', () => this.saveScore());
         this.closeLeaderboardBtn.addEventListener('click', () => this.hideLeaderboard());
+        this.errorOkBtn.addEventListener('click', () => this.hideError());
+        this.closeErrorBtn.addEventListener('click', () => this.hideError());
         
         this.leaderboardModal.addEventListener('click', (e) => {
             if (e.target === this.leaderboardModal) {
                 this.hideLeaderboard();
+            }
+        });
+        
+        this.errorModal.addEventListener('click', (e) => {
+            if (e.target === this.errorModal) {
+                this.hideError();
             }
         });
         
@@ -133,7 +149,6 @@ class Game2048 {
                     this.showGameOver();
                 }
             } catch (e) {
-                console.error('Failed to load game', e);
                 this.newGame();
             }
         } else {
@@ -271,30 +286,14 @@ class Game2048 {
     }
 
     showWinMessage() {
-        const winNotification = document.createElement('div');
-        winNotification.textContent = '🎉 Поздравляем! Вы достигли 2048! 🎉';
-        winNotification.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(237, 194, 46, 0.95);
-            color: white;
-            padding: 20px 40px;
-            border-radius: 10px;
-            font-size: 1.2em;
-            font-weight: bold;
-            z-index: 999;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            animation: fadeIn 0.3s ease-in;
-        `;
-        
-        document.body.appendChild(winNotification);
+        this.winNotification.classList.remove('hidden');
+        this.winNotification.classList.remove('fade-out');
         
         setTimeout(() => {
-            winNotification.style.animation = 'fadeOut 0.3s ease-out';
+            this.winNotification.classList.add('fade-out');
             setTimeout(() => {
-                document.body.removeChild(winNotification);
+                this.winNotification.classList.add('hidden');
+                this.winNotification.classList.remove('fade-out');
             }, 300);
         }, 2000);
     }
@@ -435,7 +434,9 @@ class Game2048 {
     }
 
     renderTiles() {
-        this.tilesContainer.innerHTML = '';
+        while (this.tilesContainer.firstChild) {
+            this.tilesContainer.removeChild(this.tilesContainer.firstChild);
+        }
         
         const containerRect = this.gridContainer.getBoundingClientRect();
         const cellSize = (containerRect.width - (15 * (this.gridSize + 1))) / this.gridSize;
@@ -462,10 +463,9 @@ class Game2048 {
                     const left = gap + j * (cellSize + gap);
                     const top = gap + i * (cellSize + gap);
                     
-                    tileElement.style.width = `${cellSize}px`;
-                    tileElement.style.height = `${cellSize}px`;
-                    tileElement.style.left = `${left}px`;
-                    tileElement.style.top = `${top}px`;
+                    tileElement.style.setProperty('--tile-size', `${cellSize}px`);
+                    tileElement.style.setProperty('--tile-left', `${left}px`);
+                    tileElement.style.setProperty('--tile-top', `${top}px`);
                     
                     this.tilesContainer.appendChild(tileElement);
                 }
@@ -478,6 +478,7 @@ class Game2048 {
         this.gameOverTitle.textContent = 'Игра окончена!';
         this.saveScoreForm.classList.remove('hidden');
         this.scoreSavedMessage.classList.add('hidden');
+        this.nameErrorMessage.classList.add('hidden');
         this.playerNameInput.value = '';
         this.gameOverModal.classList.add('active');
         this.hideMobileControls();
@@ -497,9 +498,11 @@ class Game2048 {
         const playerName = this.playerNameInput.value.trim();
         
         if (!playerName) {
-            alert('Пожалуйста, введите ваше имя');
+            this.nameErrorMessage.classList.remove('hidden');
             return;
         }
+        
+        this.nameErrorMessage.classList.add('hidden');
         
         const leaderboard = this.getLeaderboard();
         
@@ -530,7 +533,9 @@ class Game2048 {
         const tbody = document.getElementById('leaderboard-body');
         const emptyMessage = document.getElementById('empty-leaderboard');
         
-        tbody.innerHTML = '';
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
         
         if (leaderboard.length === 0) {
             emptyMessage.classList.remove('hidden');
@@ -549,12 +554,21 @@ class Game2048 {
                     year: 'numeric'
                 });
                 
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${this.escapeHtml(entry.name)}</td>
-                    <td>${entry.score}</td>
-                    <td>${formattedDate}</td>
-                `;
+                const rankCell = document.createElement('td');
+                rankCell.textContent = index + 1;
+                row.appendChild(rankCell);
+                
+                const nameCell = document.createElement('td');
+                nameCell.textContent = entry.name;
+                row.appendChild(nameCell);
+                
+                const scoreCell = document.createElement('td');
+                scoreCell.textContent = entry.score;
+                row.appendChild(scoreCell);
+                
+                const dateCell = document.createElement('td');
+                dateCell.textContent = formattedDate;
+                row.appendChild(dateCell);
                 
                 tbody.appendChild(row);
             });
@@ -572,19 +586,26 @@ class Game2048 {
     }
 
     hideMobileControls() {
-        this.mobileControls.style.display = 'none';
+        this.mobileControls.classList.remove('visible');
     }
 
     showMobileControls() {
         if (window.innerWidth <= 768) {
-            this.mobileControls.style.display = 'flex';
+            this.mobileControls.classList.add('visible');
         }
     }
 
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+    showError(message) {
+        this.errorMessageText.textContent = message;
+        this.errorModal.classList.add('active');
+        this.hideMobileControls();
+    }
+
+    hideError() {
+        this.errorModal.classList.remove('active');
+        if (!this.gameOver) {
+            this.showMobileControls();
+        }
     }
 
     initTouchControls() {
@@ -649,4 +670,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
 

@@ -177,6 +177,10 @@ h1 {
     border-radius: 6px;
     transition: all 0.15s ease-in-out;
     color: #776e65;
+    width: var(--tile-size);
+    height: var(--tile-size);
+    left: var(--tile-left);
+    top: var(--tile-top);
 }
 
 .tile.new {
@@ -229,6 +233,10 @@ h1 {
     flex-direction: column;
     gap: 10px;
     align-items: center;
+}
+
+.mobile-controls.visible {
+    display: flex;
 }
 
 .controls-row {
@@ -378,6 +386,37 @@ h1 {
     color: #fff;
     padding: 40px;
     font-size: 1.2em;
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-size: 0.9em;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.win-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(237, 194, 46, 0.95);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    z-index: 999;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    animation: fadeIn 0.3s ease-in;
+}
+
+.win-notification.hidden {
+    display: none;
+}
+
+.win-notification.fade-out {
+    animation: fadeOut 0.3s ease-out;
 }
 
 /* Scrollbar styling */
